@@ -65,7 +65,7 @@ def ifFileExist(filename: str):
         print('Справочник пуст или не существует. Введите хотя бы одну запись для начала работы')
         return False
 
-    # чтение справочника в формате словаря
+# чтение справочника в формате словаря
 def readDictFormFile(filename: str):
     with open(filename, 'r', encoding='utf-8') as f:
         data = json.load(f)
@@ -80,7 +80,7 @@ def inputDataFile(filename: str,dataInput):
     data[str(countNonemptyLines(filename) + 1)] = dataInput
     with open(filename, 'w', encoding='utf-8') as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
-    print()
+    print(f'Запись {dataInput} успешно добавлена')
     return filename
 
 # считаем список строк, чтобы присвоить номер записи
@@ -95,6 +95,15 @@ def printDictToFile(filename: str, newData):
     with open(filename, 'w', encoding='utf-8') as file:
         json.dump(newData, file, ensure_ascii=False, indent=4)
     print()
+
+# проверяем есть ключ в словаре
+def ifKeyInDict(key: str, data, filename: str):
+   if key in data:
+       return True
+   else:
+       print()
+       print(f'Записи с номером {key} не существует в справочнике {filename}')
+       return False
 
 # генерируем случайный справочник
 def randomBook():
@@ -112,14 +121,16 @@ def deleteDataFile(filename: str):
     if not ifFileExist(filename):
         return
     deleteKey = input('Введите номер записи для удаления: ')
+    data = readDictFormFile(filename)
+    if not ifKeyInDict(deleteKey, data, filename):
+        return
+    showRecord = data[deleteKey]
+    print(*showRecord)
     changeYouMind = input('Вы точно хотите удалить запись, если да введите \"Y\": ')
     if changeYouMind.upper() != 'Y':
         print()
         print('ОТМЕНА УДАЛЕНИЯ ЗАПИСИ!')
         return
-    data = readDictFormFile(filename)
-    showRecord = data[deleteKey]
-    print(*showRecord)
     newData = {k: v for k,v in data.items() if v != data[deleteKey]}
     newData = {str(k): v for k, v in enumerate(newData.values(), start=1)}
     printDictToFile(filename, newData)
@@ -131,6 +142,8 @@ def changeDataFile(filename: str):
         return
     changeKey = input('Введите номер записи для изменения: ')
     data = readDictFormFile(filename)
+    if not ifKeyInDict(changeKey, data, filename):
+        return
     showRecord = data[changeKey]
     print(*showRecord)
     print('Для изменения нажмите: 0 - запись целиком, 1 - фамилия, 2 - имя, 3 - отчество, 4 - номер телефона , 5 - отмена')
@@ -239,11 +252,30 @@ def mergerFiles(filename: str):
     newName = '.'.join([input(f'Введите имя файла для объединения с файлом {filename}: '), 'json'])
     if not ifFileExist(newName):
         return
-    data = readDictFormFile(filename)
-    newData = readDictFormFile(newName)
-    newData = {str(int(k) + len(data)) : v for k,v in newData.items()}
-    data.update(newData)
-    printDictToFile(filename, data)
+    answer = input('Введите: 1 - добавление одной записи. 2 - Добавления среза записей. 3 - для полного слияния. 0 - отмена: ')
+    if answer == '1':
+        newData = readDictFormFile(newName)
+        key = input(f'Введите номер записи из словаря {newName}: ')
+        if not ifKeyInDict(key,newData,newName):
+            return
+        newData = {key : newData[key]}
+    elif answer == '2':
+        newData = readDictFormFile(newName)
+        startkey = input(f'Введите номер записи с которой начнется слияние словарей из словаря {newName}: ')
+        if not ifKeyInDict(startkey,newData,newName):
+            return
+        stoptkey = input(f'Введите номер записи с которой начнется слияние словарей из словаря {newName}: ')
+        if not ifKeyInDict(stoptkey,newData,newName):
+            return
+        if int(startkey) > int(stoptkey):
+            startkey, stoptkey = stoptkey, startkey
+        keys = [str(i) for i in range(int(startkey),int(stoptkey)+1)]
+        newData = {k:v for k,v in newData.items() if k in keys}
+    elif answer == '3':
+        newData = readDictFormFile(newName)
+    else:   return
+    for k in newData:
+        inputDataFile(filename, newData[k])
     print()
     print('Слияние справочников успешно завершено!')
 
