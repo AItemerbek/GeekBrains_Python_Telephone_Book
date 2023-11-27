@@ -261,10 +261,10 @@ def mergerFiles(filename: str):
         newData = {key : newData[key]}
     elif answer == '2':
         newData = readDictFormFile(newName)
-        startkey = input(f'Введите номер записи с которой начнется слияние словарей из словаря {newName}: ')
+        startkey = input(f'Введите номер записи с которой начнется слияние из словаря {newName}: ')
         if not ifKeyInDict(startkey,newData,newName):
             return
-        stoptkey = input(f'Введите номер записи с которой начнется слияние словарей из словаря {newName}: ')
+        stoptkey = input(f'Введите номер записи на которой закончится слияние из словаря {newName}: ')
         if not ifKeyInDict(stoptkey,newData,newName):
             return
         if int(startkey) > int(stoptkey):
