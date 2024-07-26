@@ -128,7 +128,7 @@ import randomdict
 информации из файла в формате словаря.
 Для этого используется метод
 ```python
-def readDictFormFile(filename: str):
+def read_dict_form_file(filename: str):
     with open(filename, 'r', encoding='utf-8') as f:
         data = json.load(f)
     return data
@@ -136,9 +136,9 @@ def readDictFormFile(filename: str):
 
 После обработки словаря программа переписывает существующий файл при помощи метода
 ```python
-def printDictToFile(filename: str, newData):
+def print_dict_to_file(filename: str, new_data):
     with open(filename, 'w', encoding='utf-8') as file:
-        json.dump(newData, file, ensure_ascii=False, indent=4)
+        json.dump(new_data, file, ensure_ascii=False, indent=4)
     print()
 ```
 
