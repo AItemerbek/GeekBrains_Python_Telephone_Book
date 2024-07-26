@@ -16,8 +16,19 @@
 import os
 import json
 import randomdict
+import platform
+import shutil
 
-clear = lambda: os.system('cls')
+
+def clear():
+    system = platform.system()
+    if system == 'Windows':
+        os.system('cls')
+    else:
+        term = os.getenv('TERM')
+        if term is None:
+            os.environ['TERM'] = 'xterm-256color'  # Установить значение по умолчанию
+        os.system('clear')
 
 
 # создать файл
